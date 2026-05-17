@@ -1,0 +1,5 @@
+build/
+build-check/
+.claude/
+mx.scratch
+!.settings
