@@ -47,32 +47,28 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/main.c
     Core/Src/gpio.c
     Core/Src/tim.c
-    Core/Src/adc.c         # CubeMX生成的ADC文件
-    Core/Src/usart.c       # CubeMX生成的串口文件
-    Core/Src/motor.c      
-    Core/Src/encoder.c     
-    Core/Src/bluetooth.c
-    Core/Src/vision.c
-
-    # ❌ 删除了原来的 Core/Src/pid.c
-    
-    # ✅ 添加新架构的 5 个核心文件
-    Core/Src/pid_core.c
-    Core/Src/pid_speed.c
-    Core/Src/pid_line.c
-    Core/Src/pid_angle.c
-    Core/Src/state_machine.c
-    
-    Core/Src/OLED.c
-    Core/Src/OLED_Data.c
-    Core/Src/MPU6050.c
+    Core/Src/adc.c
+    Core/Src/dma.c
+    Core/Src/usart.c
     Core/Src/i2c.c
-    Core/Src/Gray_Sensor.c 
+    Hardware/OLED.c
+    Hardware/OLED_Data.c
+    Hardware/Motor.c
+    Hardware/Encoder.c
+    Hardware/MPU6050.c
+    Hardware/RGB_LED.c
+    Hardware/Key.c
+    Hardware/Serial.c
+    Hardware/Bluetooth.c
+    Hardware/Gray_Sensor.c
+    Hardware/Timer.c
+    Hardware/PID.c
 # Add user sources here
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    Hardware
     # Add user defined include paths
 )
 

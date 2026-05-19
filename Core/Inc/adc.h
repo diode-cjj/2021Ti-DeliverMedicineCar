@@ -36,8 +36,6 @@ extern ADC_HandleTypeDef hadc3;
 
 /* USER CODE BEGIN Private defines */
 
-/* ADC3 给灰度传感器外部多路选择器使用，实际 8 路选择由 Gray_Sensor.c 控制 */
-
 /* USER CODE END Private defines */
 
 void MX_ADC3_Init(void);
