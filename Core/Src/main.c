@@ -2,7 +2,7 @@
 /**
   ******************************************************************************
   * @file           : main.c
-  * @brief          : Main program body (终极指南针架构)
+  * @brief          : Main program body
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -19,24 +19,28 @@
 /* USER CODE BEGIN Includes */
 #include "Serial.h"
 #include "Bluetooth.h"
-#include "Gray_Sensor.h"
 #include "Timer.h"
-#include "RGB_LED.h"
+#include "Key.h"
+#include "Encoder.h"
+#include "Motor.h"
+#include "MPU6050.h"
+#include "OLED.h"
+#include "Gray_Sensor.h"
+#include "StepperMotor.h"
+#include "K230Vision.h"
+#include "AppProcess.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -49,13 +53,10 @@ void SystemClock_Config(void);
 static void MPU_Config(void);
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
-void SystemClock_Config(void);
-void MPU_Config(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -64,31 +65,11 @@ void MPU_Config(void);
   */
 int main(void)
 {
-
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MPU Configuration--------------------------------------------------------*/
   MPU_Config();
 
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM2_Init();
@@ -96,33 +77,40 @@ int main(void)
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
   MX_ADC3_Init();
   MX_I2C1_Init();
   MX_TIM6_Init();
 
-  /* Initialize interrupts */
   MX_NVIC_Init();
+
   /* USER CODE BEGIN 2 */
   Serial_Init();
   Bluetooth_Init();
-  RGB_LED_Init();
+  K230Vision_Init();
+  Gray_Sensor_Init();
+  StepperMotor_Init();
+  OLED_Init();
   Timer_Init();
-  Bluetooth_Printf("TIM6 Interrupt Test Start\r\n");
+  Key_Init();
+  Motor_Init();
+  Encoder_Init();
+  MPU6050_Init();
+  MPU6050_Calibration();
+  AppProcess_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
   while (1)
   {
-    
+    Car_TestRun();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
-
 
 /**
   * @brief System Clock Configuration
@@ -178,10 +166,6 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * @brief NVIC Configuration.
-  * @retval None
-  */
 static void MX_NVIC_Init(void)
 {
   /* DMA1_Stream0_IRQn interrupt configuration */
@@ -190,35 +174,21 @@ static void MX_NVIC_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-/* 定时器中断函数，可以复制到使用它的地方 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM6) {
-    static uint16_t Timer_TestCount = 0U;
-
     Timer_OnTim6Elapsed();
-
-    /* TIM6 每 10ms 进一次中断，累计 50 次约 500ms 翻转一次蓝色 LED */
-    if (++Timer_TestCount >= 50U) {
-      Timer_TestCount = 0U;
-      
-    }
   }
 }
-
 /* USER CODE END 4 */
 
- /* MPU Configuration */
-
+/* MPU Configuration */
 void MPU_Config(void)
 {
   MPU_Region_InitTypeDef MPU_InitStruct = {0};
 
-  /* Disables the MPU */
   HAL_MPU_Disable();
 
-  /** Initializes and configures the Region and the memory to be protected
-  */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
   MPU_InitStruct.Number = MPU_REGION_NUMBER0;
   MPU_InitStruct.BaseAddress = 0x0;
@@ -232,9 +202,7 @@ void MPU_Config(void)
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
-  /* Enables the MPU */
   HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
-
 }
 
 /**
@@ -243,13 +211,10 @@ void MPU_Config(void)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT
 /**
@@ -261,9 +226,5 @@ void Error_Handler(void)
   */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

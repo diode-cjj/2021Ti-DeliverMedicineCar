@@ -63,12 +63,19 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Hardware/Gray_Sensor.c
     Hardware/Timer.c
     Hardware/PID.c
+    Hardware/StepperMotor.c
+    Hardware/K230Vision.c
+    Process_Function/AppProcess.c
+    Process_Function/CarControl.c
+    Process_Function/TrackProcess.c
+    Process_Function/BallTrackProcess.c
 # Add user sources here
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     Hardware
+    Process_Function
     # Add user defined include paths
 )
 

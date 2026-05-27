@@ -6,15 +6,18 @@
 
 static uint8_t usart1_rx_data;
 static uint8_t usart2_rx_data;
+static uint8_t usart3_rx_data;
 
 static Serial_RxCallback usart1_callback;
 static Serial_RxCallback usart2_callback;
+static Serial_RxCallback usart3_callback;
 
 void Serial_Init(void)
 {
     /* 启动 USART1/2 单字节中断接收 */
     HAL_UART_Receive_IT(&huart1, &usart1_rx_data, 1);
     HAL_UART_Receive_IT(&huart2, &usart2_rx_data, 1);
+    HAL_UART_Receive_IT(&huart3, &usart3_rx_data, 1);
 }
 
 void Serial_SetRxCallback(UART_HandleTypeDef *huart, Serial_RxCallback callback)
@@ -24,6 +27,8 @@ void Serial_SetRxCallback(UART_HandleTypeDef *huart, Serial_RxCallback callback)
         usart1_callback = callback;
     } else if (huart->Instance == USART2) {
         usart2_callback = callback;
+    } else if (huart->Instance == USART3) {
+        usart3_callback = callback;
     }
 }
 
@@ -63,5 +68,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         /* USART2 收到字节后调用用户回调，并重新打开接收中断 */
         if (usart2_callback != 0) usart2_callback(usart2_rx_data);
         HAL_UART_Receive_IT(&huart2, &usart2_rx_data, 1);
+    } else if (huart->Instance == USART3) {
+        /* USART3 鏀跺埌瀛楄妭鍚庤皟鐢ㄧ敤鎴峰洖璋冿紝骞堕噸鏂版墦寮€鎺ユ敹涓柇 */
+        if (usart3_callback != 0) usart3_callback(usart3_rx_data);
+        HAL_UART_Receive_IT(&huart3, &usart3_rx_data, 1);
     }
 }
